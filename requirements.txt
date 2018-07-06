@@ -32,6 +32,7 @@ pluggy==0.6.0
 prompt-toolkit==1.0.15
 ptyprocess==0.6.0
 py==1.5.4
+pycountry==18.5.26
 Pygments==2.2.0
 pyLDAvis==2.1.2
 pytest==3.6.2

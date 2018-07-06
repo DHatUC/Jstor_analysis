@@ -13,6 +13,7 @@ abstract_words = ['Key words', 'Summary', 'Abstract', 'INTRODUCTION', 'Introduct
 stop_words = ['AND', 'Georgia']
 NUM_START, NUM_STOP = 0, 200000
 OUTPUT_FILE = 'countries_1.json'
+FOLDERS = ['a', 'b']
 
 
 def file2text(file):
@@ -86,33 +87,32 @@ def load_file(path):
     paper_attributes = {}
     country_counter = []
     for folder in os.listdir(path):
-        for file in os.listdir(os.path.join(path, folder)):
-            num_files += 1
-            if num_files <= NUM_START:
-                continue
-            parsed_result = file2text(os.path.join(path, folder, file))
-            method_text = get_methods(parsed_result['text'])
-            if method_text:
-                token_text = stemming(remove_stop_words(tokenize(method_text)))
-                texts.append(token_text)
-                num_methods += 1
-                author_countries = get_country(parsed_result['text'][:1000])
-                if len(author_countries) > 1:
-                    num_abstract += 1
-                    paper_id = file.split('.')[0]
-                    paper_attributes[paper_id] = {'countries': author_countries}
-                    for c in author_countries:
-                        if c in country_counter:
-                            country_counter[c] += 1
-                        else:
-                            country_counter[c] = 1
-            if num_files % 1000 == 0:
-                print(num_files, num_methods, num_abstract)
-            if num_files > NUM_STOP:
-                with open(os.path.join(os.getcwd(), 'metadata', OUTPUT_FILE), 'w') as f:
-                    json.dump(paper_attributes, f)
-                print(country_counter)
-                return
+        if folder[0] in FOLDERS:
+            for file in os.listdir(os.path.join(path, folder)):
+                num_files += 1
+                if num_files <= NUM_START:
+                    continue
+                parsed_result = file2text(os.path.join(path, folder, file))
+                method_text = get_methods(parsed_result['text'])
+                if method_text:
+                    token_text = stemming(remove_stop_words(tokenize(method_text)))
+                    texts.append(token_text)
+                    num_methods += 1
+                    author_countries = get_country(parsed_result['text'][:1000])
+                    if len(author_countries) > 1:
+                        num_abstract += 1
+                        paper_id = file.split('.')[0]
+                        paper_attributes[paper_id] = {'countries': author_countries}
+                        for c in author_countries:
+                            if c in country_counter:
+                                country_counter[c] += 1
+                            else:
+                                country_counter[c] = 1
+                if num_files % 1000 == 0:
+                    print(num_files, num_methods, num_abstract)
+    with open(os.path.join(os.getcwd(), 'metadata', OUTPUT_FILE), 'w') as f:
+        json.dump(paper_attributes, f)
+    print(country_counter)
     print("finished extraction")
     print(num_files, num_methods, num_abstract)
 

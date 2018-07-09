@@ -12,8 +12,8 @@ word_list = ['Introduction', 'Results', 'Discussion']
 abstract_words = ['Key words', 'Summary', 'Abstract', 'INTRODUCTION', 'Introduction']
 stop_words = ['AND', 'Georgia']
 NUM_START, NUM_STOP = 0, 200000
-OUTPUT_FILE = 'countries_1.json'
-FOLDERS = ['a', 'b']
+OUTPUT_FILE = 'countries_test.json'
+FOLDERS = ['z']
 
 
 def file2text(file):
@@ -85,9 +85,10 @@ def load_file(path):
     num_methods = 0
     num_abstract = 0
     paper_attributes = {}
-    country_counter = []
+    country_counter = {}
     for folder in os.listdir(path):
         if folder[0] in FOLDERS:
+            print(folder)
             for file in os.listdir(os.path.join(path, folder)):
                 num_files += 1
                 if num_files <= NUM_START:

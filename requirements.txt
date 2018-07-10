@@ -7,6 +7,7 @@ botocore==1.10.48
 bz2file==0.98
 certifi==2018.4.16
 chardet==3.0.4
+cycler==0.10.0
 decorator==4.3.0
 docutils==0.14
 funcy==1.10.2
@@ -19,7 +20,9 @@ jedi==0.12.0
 Jinja2==2.10
 jmespath==0.9.3
 joblib==0.12.0
+kiwisolver==1.0.1
 MarkupSafe==1.0
+matplotlib==2.2.2
 more-itertools==4.2.0
 nltk==3.3
 numexpr==2.6.5
@@ -35,6 +38,7 @@ py==1.5.4
 pycountry==18.5.26
 Pygments==2.2.0
 pyLDAvis==2.1.2
+pyparsing==2.2.0
 pytest==3.6.2
 python-dateutil==2.7.3
 pytz==2018.5

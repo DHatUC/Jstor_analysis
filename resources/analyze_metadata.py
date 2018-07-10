@@ -23,8 +23,8 @@ class Metadata:
         year_wo_countries = [int(v['year']) for k, v in self.data.items() if 'countries' not in v]
         print('Average year for papers with countries: ', np.mean(year_with_countries))
         print('Average year for papers without countries: ', np.mean(year_wo_countries))
-        n_bins = range(1660, 2040, 20)
-        fig, axs = plt.subplots(1, 2, tight_layout=True)
+        n_bins = range(1660, 2040, 10)
+        fig, axs = plt.subplots(1, 2, sharey= True, tight_layout=True)
         axs[0].hist(year_with_countries, bins=n_bins)
         axs[1].hist(year_wo_countries, bins=n_bins)
         plt.show()
@@ -58,6 +58,6 @@ class Metadata:
 if __name__ == '__main__':
     data = Metadata(PATH_METADATA)
     #data.year_histogram()
-    #data.compare_on_year()
+    data.compare_on_year()
     #data.detection_performance()
-    data.find_review_required_journal()
+    #data.find_review_required_journal()

@@ -8,7 +8,7 @@ import json
 import sys
 
 
-country = sys.argv[1]
+country = ' '.join(sys.argv[1:])
 
 
 def visualize_lda(path):

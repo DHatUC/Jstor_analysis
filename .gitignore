@@ -9,3 +9,4 @@ text/*
 lda_html/*
 lda_results/*
 metadata/*
+*.sh

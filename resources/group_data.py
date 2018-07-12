@@ -71,10 +71,13 @@ def get_texts(country):
         for file in files:
             if file.split('.')[0] in file_list:
                 num_files += 1
+                if num_files % 500 == 0:
+                    print(num_files)
                 parsed_result = file2text(os.path.join(root, file))
                 method_text = get_methods(parsed_result['text'])
                 if not method_text:
-                    raise ValueError('Methods is empty')
+                    #raise ValueError('Methods is empty')
+                    print('empty Mehotds')
                 token_text = stemming(remove_stop_words(tokenize(method_text)))
                 texts.append(token_text)
     print(num_files)

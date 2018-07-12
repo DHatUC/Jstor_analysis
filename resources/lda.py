@@ -8,7 +8,7 @@ import os
 NUM_TOPICS = 25
 PASSES = 100
 
-country = sys.argv[1]
+country = ' '.join(sys.argv[1:])
 
 
 def prepare_dict(path):

@@ -25,9 +25,28 @@ class Metadata:
         print('Average year for papers without countries: ', np.mean(year_wo_countries))
         n_bins = range(1660, 2040, 10)
         fig, axs = plt.subplots(1, 2, sharey= True, tight_layout=True)
+
+        SMALL_SIZE = 8
+        MEDIUM_SIZE = 10
+        BIGGER_SIZE = 12
+
+        plt.rc('font', size=SMALL_SIZE)  # controls default text sizes
+        plt.rc('axes', titlesize=SMALL_SIZE)  # fontsize of the axes title
+        plt.rc('axes', labelsize=MEDIUM_SIZE)  # fontsize of the x and y labels
+        plt.rc('xtick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
+        plt.rc('ytick', labelsize=SMALL_SIZE)  # fontsize of the tick labels
+        plt.rc('legend', fontsize=SMALL_SIZE)  # legend fontsize
+        plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
+
+
         axs[0].hist(year_with_countries, bins=n_bins)
         axs[1].hist(year_wo_countries, bins=n_bins)
-        plt.show()
+        axs[0].set_title('Countries we can detect both countries and methods', fontsize=6)
+        axs[1].set_title('Countries we cannot detect countries or methods', fontsize=6)
+        axs[0].set_xlabel('Year', fontsize=8)
+        axs[0].set_ylabel('Number of papers', fontsize=8)
+        #plt.show()
+        plt.savefig(os.path.join(os.getcwd(), 'lda_html', 'Histogram comparison.png'), dpi=500)
 
     def find_review_required_journal(self):
         journals = {}

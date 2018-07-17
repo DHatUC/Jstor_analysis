@@ -4,7 +4,7 @@ import os
 import sys
 
 NUM_TOPICS = 25
-NUM_WORDS = 20
+NUM_WORDS = 30
 
 COUNTRY1 = 'China'
 COUNTRY2 = 'Kenya'
@@ -17,18 +17,30 @@ def load_data(country):
 
 
 def vector_similarity(d1, d2):
-        v1_words = [k for k, v in d1.items()]
-        v2_words = [k for k, v in d2.items()]
-        words = set(v1_words).intersection(v2_words)
-        similarity = 0
-        for word in words:
-            if word in d1 and d2:
-                similarity += abs(d1[word] - d2[word])
-            elif word in d1:
-                similarity += abs(d1[word])
-            elif word in d2:
-                similarity += abs(d2[word])
-        return similarity / len(words)
+
+    v1_words = [k for k, v in d1.items()]
+    v2_words = [k for k, v in d2.items()]
+    words = set(v1_words).union(v2_words)
+    similarity = 0
+    for word in words:
+        if word in d1 and word in d2:
+            similarity += abs(d1[word] - d2[word])
+        elif word in d1:
+            similarity += abs(d1[word])
+        elif word in d2:
+            similarity += abs(d2[word])
+    return similarity / len(words)
+
+
+def maximum_distance(topics1, topics2):
+    #max_value = 0
+    #for t1 in topics1:
+    #    for t2 in topics2:
+    #        value = vector_similarity(t1, t2)
+    #        if value > max_value:
+    #            max_value = value
+    #return max_value
+    return max([vector_similarity(t1, t2) for t1 in topics1 for t2 in topics2])
 
 
 class Dictionary:
@@ -84,7 +96,7 @@ class TopicModel:
     def get_center(self):
         return self.center
 
-    def inner_topic_similarity(self):
+    def intra_topic_similarity(self):
         s = 0
         #for idx1, t1 in enumerate(self.topics):
         #    for idx2, t2 in enumerate(self.topics):
@@ -116,9 +128,12 @@ def main(country1, country2):
     model2 = load_data(country2)
     topic_model1 = TopicModel(model1)
     topic_model2 = TopicModel(model2)
-    inner_s_1 = topic_model1.inner_topic_similarity()
-    inner_s_2 = topic_model2.inner_topic_similarity()
-    inter = vector_similarity(topic_model1.get_center(), topic_model2.get_center())
+    inner_s_1 = topic_model1.intra_topic_similarity()
+    inner_s_2 = topic_model2.intra_topic_similarity()
+    #print(inner_s_1, inner_s_2)
+    #inter = vector_similarity(topic_model1.get_center(), topic_model2.get_center())
+    inter = maximum_distance(topic_model1.get_topics(), topic_model2.get_topics())
+    #print(inter)
     return inter * inter / inner_s_1 / inner_s_2
 
 
@@ -126,7 +141,7 @@ if __name__ == '__main__':
     main(COUNTRY1, COUNTRY2)
     countries = ['United States', 'France', 'Australia', 'Spain', 'India', 'China', 'Brazil', 'Mexico', 'Argentina',
                  'South Africa', 'Malaysia', 'Chile', 'Kenya', 'Ecuador']
-    f = open(os.path.join(os.getcwd(), 'lda_results', 'similarities.txt'), 'w')
+    f = open(os.path.join(os.getcwd(), 'lda_results', 'maximum_similarities.txt'), 'w')
     for idx1, value1 in enumerate(countries):
         for idx2, value2 in enumerate(countries):
             if idx1 < idx2:

@@ -20,7 +20,6 @@ def load_file():
                 temp[countries[len(countries) - len(values) + i]] = values[i]
             res[countries[idx]] = temp
 
-    value_dict = res.copy()
     for country in countries:
         for key, item in res.items():
             if country != key and country not in item:
@@ -28,36 +27,8 @@ def load_file():
     return res
 
 
-
-class Model:
-    def __init__(self, country):
-        self.name = country
-
-    def get_similarity(self):
-        pass
-
-    def inter_similarity(self, country):
-        pass
-
-
-class Group:
-    def __init__(self, gid):
-        self.group = []
-        self.gid = gid
-
-    def add_country(self, country):
-        self.group.append(country)
-
-    def get_countries(self):
-        return self.group
-
-    def get_similarity(self, compared_group):
-        return max([similarities[x, y] for x in self.group for y in compared_group])
-
-
 class GroupClassifier:
     def __init__(self, similarities):
-        #self.groups = [Group(i, countries[i]) for i in range(len(countries))]
         self.groups = {i: [countries[i]] for i in range(len(countries))}
         self.linkage = []
         self.idx = len(countries)
@@ -103,7 +74,7 @@ class GroupClassifier:
 
     def run(self, linkage='single'):
         while len(self.groups) > 1:
-            if linkage == 'single:'
+            if linkage == 'single':
                 [idx1, idx2], distance = self.find_min_distance()
             elif linkage == 'complete':
                 [idx1, idx2], distance = self.find_max_distance()
@@ -120,9 +91,6 @@ def main():
     dendrogram(linkage, labels=countries, leaf_font_size=4, leaf_rotation=90, color_threshold=0)
     plt.savefig(os.path.join(os.getcwd(), 'dendrogram.png'), dpi=500)
     #plt.show()
-
-
-
 
 
 if __name__ == '__main__':

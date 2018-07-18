@@ -85,9 +85,30 @@ class GroupClassifier:
                                 min_distance = float(self.similarities[value1][value2])
         return res, min_distance
 
-    def run(self):
+    def find_max_distance(self):
+        min_distance = 10000000000
+        res = [0, 0]
+        for idx1, values1 in self.groups.items():
+            for idx2, values2 in self.groups.items():
+                if idx1 < idx2:
+                    max_group_distance, temp_idx = 0, 0
+                    for value1 in values1:
+                        for value2 in values2:
+                            if float(self.similarities[value1][value2]) > max_group_distance:
+                                max_group_distance = float(self.similarities[value1][value2])
+                    if max_group_distance < min_distance:
+                        res = [idx1, idx2]
+                        min_distance = max_group_distance
+        return res, min_distance
+
+    def run(self, linkage='single'):
         while len(self.groups) > 1:
-            [idx1, idx2], distance = self.find_min_distance()
+            if linkage == 'single:'
+                [idx1, idx2], distance = self.find_min_distance()
+            elif linkage == 'complete':
+                [idx1, idx2], distance = self.find_max_distance()
+            else:
+                raise ValueError()
             self.merge_groups(idx1, idx2, distance)
         return self.linkage
 

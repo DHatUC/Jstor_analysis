@@ -1,6 +1,6 @@
 from timer import Timer
 from xml.etree import ElementTree as ET
-from pre_processing import tokenize, remove_stop_words, stemming, remove_lf_words
+from utilities.pre_processing import tokenize, remove_stop_words, stemming, remove_lf_words
 import os
 import json
 

@@ -1,5 +1,5 @@
 from gensim import corpora, models
-from pre_processing.timer import Timer
+from utilities.timer import Timer
 import sys
 
 import json

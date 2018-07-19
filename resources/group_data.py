@@ -1,4 +1,4 @@
-from pre_processing.pre_processing import tokenize, remove_stop_words, stemming
+from utilities.pre_processing import tokenize, remove_stop_words, stemming
 from xml.etree import ElementTree as ET
 import os
 import json

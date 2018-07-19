@@ -5,9 +5,11 @@ import os
 countries = ['United States', 'France', 'Australia', 'Spain', 'India', 'China', 'Brazil', 'Mexico', 'Argentina',
              'South Africa', 'Malaysia', 'Chile', 'Kenya', 'Ecuador']
 
+PATH = os.path.join(os.getcwd(), 'lda_results', 'maximum_similarities.txt')
 
-def load_file():
-    with open(os.path.join(os.getcwd(), 'lda_results', 'similarities.txt')) as f:
+
+def load_file(path):
+    with open(path) as f:
         data = f.read()
     res = {}
     idx = -1
@@ -41,7 +43,6 @@ class GroupClassifier:
         del self.groups[idx1]
         del self.groups[idx2]
         self.linkage.append([idx1, idx2, distance, len(group)])
-
 
     def find_min_distance(self):
         min_distance = 10000000
@@ -85,7 +86,7 @@ class GroupClassifier:
 
 
 def main():
-    similarities = load_file()
+    similarities = load_file(PATH)
     classifier = GroupClassifier(similarities)
     linkage = classifier.run()
     dendrogram(linkage, labels=countries, leaf_font_size=4, leaf_rotation=90, color_threshold=0)

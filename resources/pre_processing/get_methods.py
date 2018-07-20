@@ -1,10 +1,12 @@
+import sys
+import os
+sys.path.insert(0, os.getcwd())
+
 from xml.etree import ElementTree as ET
 from utilities.pre_processing import tokenize, remove_stop_words, stemming, remove_lf_words
-import os
 import json
 import pycountry
 import re
-import collections
 
 
 key_words = ['Method','Materials and methods']
@@ -97,12 +99,14 @@ def load_file(path):
                 method_text = get_methods(parsed_result['text'])
                 if method_text:
                     token_text = stemming(remove_stop_words(tokenize(method_text)))
-                    texts.append(token_text)
                     num_methods += 1
                     author_countries = get_country(parsed_result['text'][:1000])
                     if len(author_countries) > 1:
                         num_abstract += 1
                         paper_id = file.split('.')[0]
+                        method_coo = get_countries_from_methods(method_text)
+                        if len(method_coo) > 0:
+                            texts[paper_id] = get_countries_from_methods(method_text)
                         paper_attributes[paper_id] = {'countries': author_countries}
                         for c in author_countries:
                             if c in country_counter:

@@ -1,12 +1,14 @@
-from gensim import corpora, models
-from utilities.timer import Timer
 import sys
-
-import json
 import os
+sys.path.insert(0, os.getcwd())
+from utilities.timer import Timer
+
+from gensim import corpora, models
+import json
 
 NUM_TOPICS = 25
-PASSES = 100
+PASSES = 200
+version = '200pass_2'
 
 country = ' '.join(sys.argv[1:])
 
@@ -27,9 +29,9 @@ def load_file(path):
     #ldamodel = models.ldamodel.LdaModel(corpus, num_topics=NUM_TOPICS, id2word=dictionary, passes=PASSES)
     ldamodel = models.LdaMulticore(corpus, num_topics=NUM_TOPICS, id2word=dictionary, passes=PASSES, workers=4)
     t3.ends()
-    os.mkdir(os.path.join(path, 'lda_results', country))
-    ldamodel.save(os.path.join(path, 'lda_results', country, 'lda_model'))
-    dictionary.save(os.path.join(path, 'lda_results', country, 'dictionary'))
+    os.mkdir(os.path.join(path, 'lda_results', country, version))
+    ldamodel.save(os.path.join(path, 'lda_results', country, version, 'lda_model'))
+    dictionary.save(os.path.join(path, 'lda_results', country, version, 'dictionary'))
 
 
 if __name__ == '__main__':

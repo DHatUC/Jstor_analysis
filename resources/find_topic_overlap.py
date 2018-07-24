@@ -4,19 +4,20 @@ from gensim import models
 import numpy as np
 import os
 import re
+import collections
 
 
 NUM_TOPICS = 25
-NUM_WORDS = 0
+NUM_WORDS = 100
 
-def load_data(country):
-    path = os.path.join(os.getcwd(), 'lda_results', country, 'lda_model')
+
+def load_data(country, version=''):
+    path = os.path.join(os.getcwd(), 'lda_results', country, version, 'lda_model')
     model = models.LdaModel.load(path)
     return model
 
 
 class TopicModel:
-
     def __init__(self, model):
         self.topics = []
         self.dictionary = []
@@ -60,7 +61,6 @@ class DistanceModel:
             topics1 = self.topics1
             topics2 = self.topics2
         similarities = []
-        dct = {}
         for idx1, topic1 in enumerate(topics1):
             for idx2, topic2 in enumerate(topics2):
                 similarities.append(cosine(topic1, topic2))
@@ -73,17 +73,54 @@ class DistanceModel:
             idx = similarities.index(sorted_similarities[i])
             a = int((idx + 1) / 25)
             b = (idx + 1) % 25 - 1
-            print(similarities[idx], '|', self.topic_words1[a][:10],'|',  self.topic_words2[b][:10])
+            print(similarities[idx], '|', self.topic_words1[a][:10], '|',  self.topic_words2[b][:10])
+
+    def find_best_match(self):
+        matrix = {}
+        for idx1, topic1 in enumerate(self.topics1):
+            matrix[idx1] = []
+            for idx2, topic2 in enumerate(self.topics2):
+                matrix[idx1].append(cosine(topic1, topic2))
+        hits = {}
+        for idx, vectors in matrix.items():
+            min_distance = sorted(vectors)[0]
+            min_idx = vectors.index(min_distance)
+            hits[idx] = {'hit': min_idx, 'rank': 0, 'distance': min_distance}
+        has_new_change = True
+        while has_new_change:
+            has_new_change = False
+            temp = []
+            for idx, vector in hits.items():
+                if vector['hit'] not in temp:
+                    temp.append(vector['hit'])
+                else:
+                    idx_compared = [k for k, v in hits.items() if v['hit'] == vector['hit']][0]
+                    if matrix[idx][vector['hit']] < matrix[idx_compared][vector['hit']]:
+                        current_vector = hits[idx_compared]
+                        updated_hit = matrix[idx_compared].index(sorted(matrix[idx_compared])[current_vector['rank'] + 1])
+                        hits[idx_compared] = {'hit': updated_hit, 'rank': current_vector['rank'] + 1, 'distance': matrix[idx_compared][updated_hit]}
+                    else:
+                        current_vector = hits[idx]
+                        updated_hit = matrix[idx]. index(sorted(matrix[idx])[current_vector['rank'] + 1])
+                        hits[idx] = {'hit': updated_hit, 'rank': current_vector['rank'] + 1, 'distance': matrix[idx_compared][updated_hit]}
+                    has_new_change = True
+        overlapping_words = []
+        for idx, topic in enumerate(self.topic_words1):
+            num_words = len([word for word in topic if word in self.topic_words2[hits[idx]['hit']]])
+            overlapping_words.append(num_words)
+        print(overlapping_words)
+        print(np.mean(overlapping_words))
 
 
 def main():
     country1, country2 = 'United States', 'Mexico'
-    model1 = load_data(country1)
-    model2 = load_data(country2)
+    model1 = load_data(country2, version='')
+    model2 = load_data(country2, version='2nd')
     topic_model1 = TopicModel(model1)
     topic_model2 = TopicModel(model2)
     distance_model = DistanceModel(topic_model1, topic_model2)
-    distance_model.calculate_topic_similarities(normalization=True)
+    #distance_model.calculate_topic_similarities(normalization=True)
+    distance_model.find_best_match()
 
 
 if __name__ == '__main__':

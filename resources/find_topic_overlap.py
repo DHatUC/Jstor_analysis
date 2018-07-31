@@ -4,10 +4,11 @@ from gensim import models
 import numpy as np
 import os
 import re
+import random
 import collections
 
 
-NUM_TOPICS = 25
+NUM_TOPICS = 15
 NUM_WORDS = 100
 
 
@@ -75,12 +76,12 @@ class DistanceModel:
             b = (idx + 1) % 25 - 1
             print(similarities[idx], '|', self.topic_words1[a][:10], '|',  self.topic_words2[b][:10])
 
-    def find_best_match(self):
+    def find_best_match_cosine_similarity(self):
         matrix = {}
         for idx1, topic1 in enumerate(self.topics1):
             matrix[idx1] = []
             for idx2, topic2 in enumerate(self.topics2):
-                matrix[idx1].append(cosine(topic1, topic2))
+                matrix[idx1].append(cosine(topic1, topic2) + random.randint(0, 100) / 1000000)
         hits = {}
         for idx, vectors in matrix.items():
             min_distance = sorted(vectors)[0]
@@ -104,6 +105,45 @@ class DistanceModel:
                         updated_hit = matrix[idx]. index(sorted(matrix[idx])[current_vector['rank'] + 1])
                         hits[idx] = {'hit': updated_hit, 'rank': current_vector['rank'] + 1, 'distance': matrix[idx_compared][updated_hit]}
                     has_new_change = True
+        cos_distances = []
+        overlapping_words = []
+        for idx, topic in enumerate(self.topic_words1):
+            cos_distances.append(matrix[idx][hits[idx]['hit']])
+            num_words = len([word for word in topic if word in self.topic_words2[hits[idx]['hit']]])
+            overlapping_words.append(num_words)
+        print(np.mean(cos_distances), cos_distances)
+        print(overlapping_words)
+        print(np.mean(overlapping_words))
+
+    def find_best_match_overlapping_words(self):
+        matrix = {}
+        for idx1, topic1 in enumerate(self.topic_words1):
+            matrix[idx1] = []
+            for idx2, topic2 in enumerate(self.topic_words2):
+                matrix[idx1].append(len([x for x in topic1 if x in topic2]) / len(topic1) + random.randint(0, 100) / 1000000)
+        hits = {}
+        for idx, vectors in matrix.items():
+            max_distance = sorted(vectors, reverse=True)[0]
+            max_idx = vectors.index(max_distance)
+            hits[idx] = {'hit': max_idx, 'rank': 0, 'distance': max_distance}
+        has_new_change = True
+        while has_new_change:
+            has_new_change = False
+            temp = []
+            for idx, vector in hits.items():
+                if vector['hit'] not in temp:
+                    temp.append(vector['hit'])
+                else:
+                    idx_compared = [k for k, v in hits.items() if v['hit'] == vector['hit']][0]
+                    if matrix[idx][vector['hit']] > matrix[idx_compared][vector['hit']]:
+                        current_vector = hits[idx_compared]
+                        updated_hit = matrix[idx_compared].index(sorted(matrix[idx_compared], reverse=True)[current_vector['rank'] + 1])
+                        hits[idx_compared] = {'hit': updated_hit, 'rank': current_vector['rank'] + 1, 'distance': matrix[idx_compared][updated_hit]}
+                    else:
+                        current_vector = hits[idx]
+                        updated_hit = matrix[idx]. index(sorted(matrix[idx], reverse=True)[current_vector['rank'] + 1])
+                        hits[idx] = {'hit': updated_hit, 'rank': current_vector['rank'] + 1, 'distance': matrix[idx_compared][updated_hit]}
+                    has_new_change = True
         overlapping_words = []
         for idx, topic in enumerate(self.topic_words1):
             num_words = len([word for word in topic if word in self.topic_words2[hits[idx]['hit']]])
@@ -113,14 +153,15 @@ class DistanceModel:
 
 
 def main():
-    country1, country2 = 'United States', 'Mexico'
-    model1 = load_data(country2, version='')
-    model2 = load_data(country2, version='2nd')
+    country1, country2 = 'United States', 'China'
+    model1 = load_data(country1, version='')
+    model2 = load_data(country2, version='')
     topic_model1 = TopicModel(model1)
     topic_model2 = TopicModel(model2)
     distance_model = DistanceModel(topic_model1, topic_model2)
     #distance_model.calculate_topic_similarities(normalization=True)
-    distance_model.find_best_match()
+    distance_model.find_best_match_cosine_similarity()
+    #distance_model.find_best_match_overlapping_words()
 
 
 if __name__ == '__main__':

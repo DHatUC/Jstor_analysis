@@ -5,12 +5,16 @@ from utilities.timer import Timer
 
 from gensim import corpora, models
 import json
+import argparse
 
-NUM_TOPICS = 25
+NUM_TOPICS = 20
 PASSES = 200
-version = '200pass_2'
-
-country = ' '.join(sys.argv[1:])
+parser = argparse.ArgumentParser(description='Run LDA on a country and generate a new version')
+parser.add_argument('--country', help='Country name', nargs='+', required=True)
+parser.add_argument('--version', type=str, default='', help='A version name')
+args = parser.parse_args()
+country = ' '.join(args.country)
+version = args.version
 
 
 def prepare_dict(path):
@@ -27,9 +31,14 @@ def load_file(path):
     t1.ends()
     t3 = Timer("LDA")
     #ldamodel = models.ldamodel.LdaModel(corpus, num_topics=NUM_TOPICS, id2word=dictionary, passes=PASSES)
-    ldamodel = models.LdaMulticore(corpus, num_topics=NUM_TOPICS, id2word=dictionary, passes=PASSES, workers=4)
+    ldamodel = models.LdaMulticore(corpus, num_topics=NUM_TOPICS, id2word=dictionary, passes=PASSES, workers=2)
     t3.ends()
-    os.mkdir(os.path.join(path, 'lda_results', country, version))
+    country_dir = os.path.join(path, 'lda_results', country)
+    if not os.path.isdir(country_dir):
+        os.mkdir(country_dir)
+    version_dir = os.path.join(country_dir, version)
+    if not os.path.isdir(version_dir):
+        os.mkdir(version_dir)
     ldamodel.save(os.path.join(path, 'lda_results', country, version, 'lda_model'))
     dictionary.save(os.path.join(path, 'lda_results', country, version, 'dictionary'))
 

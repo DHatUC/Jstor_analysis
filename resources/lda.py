@@ -7,7 +7,7 @@ from gensim import corpora, models
 import json
 import argparse
 
-NUM_TOPICS = 20
+NUM_TOPICS = 25
 PASSES = 200
 parser = argparse.ArgumentParser(description='Run LDA on a country and generate a new version')
 parser.add_argument('--country', help='Country name', nargs='+', required=True)

@@ -4,7 +4,7 @@ import json
 import pycountry
 import re
 import collections
-
+import argparse
 
 key_words = ['Method','Materials and methods']
 word_list = ['Introduction', 'Results', 'Discussion']
@@ -22,7 +22,11 @@ states_USA = ['Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connec
 stop_words = ['AND', 'Georgia']
 NUM_START, NUM_STOP = 0, 200000
 OUTPUT_FILE = 'countries_os.json'
-FOLDERS = ['z']
+parser = argparse.ArgumentParser('Detect countries in documents')
+parser.add_argument('folders', metavar='N',  nargs='+', help='Initials of journals')
+args = parser.parse_args()
+FOLDERS = args.folders
+
 
 
 def file2text(file):
@@ -76,22 +80,31 @@ def get_country(text):
 
 def get_countries_from_method(text):
     countries = list(pycountry.countries)
-    author_countries = []
+    author_countries = {}
     for country in countries:
         if country.alpha_3 not in stop_words and country.name not in stop_words:
-            if re.search(r'{}\b'.format(country.name), text) \
-                    or re.search(r'{}\b'.format(country.name.upper()), text) \
-                    or re.search(r'The {}\b'.format(country.name), text):
+            search_result_len = len(re.findall(r'{}\b'.format(country.name), text)) \
+                                + len(re.findall(r'{}\b'.format(country.name.upper()), text)) \
+                                + len(re.findall(r'The {}\b'.format(country.name), text))
+            if search_result_len > 0:
                 if country.name not in author_countries:
-                    author_countries.append(country.name)
+                    author_countries[country.name] = search_result_len
+                else:
+                    author_countries[country.name] += search_result_len
     for state in states_USA:
-        if re.search(r'{}\b'.format(state), text):
-            if 'United States' not in author_countries:
-                author_countries.append('United States')
+        search_result = re.findall(r'{}\b'.format(state), text)
+        if len(search_result) > 0:
+            if 'United States' in author_countries:
+                author_countries['United States'] += len(search_result)
+            else:
+                author_countries['United States'] = len(search_result)
     for state_ab in states_USA_abbreviation:
-        if re.search(r', {}\b'.format(state_ab), text):
-            if 'United States' not in author_countries:
-                author_countries.append('United States')
+        search_result = re.findall(r', {}\b'.format(state_ab), text)
+        if len(search_result) > 0:
+            if 'United States' in author_countries:
+                author_countries['United States'] += len(search_result)
+            else:
+                author_countries['United States'] = len(search_result)
     return author_countries
 
 
@@ -144,10 +157,10 @@ def load_file(path):
                                 country_counter[c] = 1
                 if num_files % 1000 == 0:
                     print(num_files, num_methods, num_abstract)
-    with open(os.path.join(os.getcwd(), 'metadata', 'method_countries_dct.json'), 'w') as f:
+    with open(os.path.join(os.getcwd(), 'metadata', 'countries_METHOD', 'method_countries_{}.json'.format(FOLDERS[0] + FOLDERS[-1])), 'w') as f:
         json.dump(method_countries_dict, f)
-    with open(os.path.join(os.getcwd(), 'metadata', OUTPUT_FILE), 'w') as f:
-        json.dump(paper_attributes, f)
+    #with open(os.path.join(os.getcwd(), 'metadata', OUTPUT_FILE), 'w') as f:
+    #    json.dump(paper_attributes, f)
     print(country_counter)
     print("finished extraction")
     print(num_files, num_methods, num_abstract)

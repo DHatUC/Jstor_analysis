@@ -5,7 +5,7 @@ import numpy as np
 import os
 import re
 import random
-import collections
+import argparse
 
 
 NUM_TOPICS = 15
@@ -111,9 +111,11 @@ class DistanceModel:
             cos_distances.append(matrix[idx][hits[idx]['hit']])
             num_words = len([word for word in topic if word in self.topic_words2[hits[idx]['hit']]])
             overlapping_words.append(num_words)
+        print(np.mean(cos_distances))
+        print(len([x for x in cos_distances if x < 0.4]))
         print(np.mean(cos_distances), cos_distances)
-        print(overlapping_words)
-        print(np.mean(overlapping_words))
+        #print(overlapping_words)
+        #print(np.mean(overlapping_words))
 
     def find_best_match_overlapping_words(self):
         matrix = {}
@@ -153,11 +155,20 @@ class DistanceModel:
 
 
 def main():
-    country1, country2 = 'United States', 'China'
-    model1 = load_data(country1, version='')
-    model2 = load_data(country2, version='')
+    parser = argparse.ArgumentParser(description='Compare distances between models')
+    parser.add_argument('--c1', help='Country name 1', nargs='+', required=True)
+    parser.add_argument('--c2', help='Country name 2', nargs='+', required=True)
+    parser.add_argument('--v1', help='Version 1', default='')
+    parser.add_argument('--v2', help='Version 2', default='')
+    args = parser.parse_args()
+    country1, country2 = ' '.join(args.c1), ' '.join(args.c2)
+    version1, version2 = args.v1, args.v2
+
+    model1 = load_data(country1, version=version1)
+    model2 = load_data(country2, version=version2)
     topic_model1 = TopicModel(model1)
     topic_model2 = TopicModel(model2)
+    print(country1)
     distance_model = DistanceModel(topic_model1, topic_model2)
     #distance_model.calculate_topic_similarities(normalization=True)
     distance_model.find_best_match_cosine_similarity()

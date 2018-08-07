@@ -20,13 +20,11 @@ states_USA = ['Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connec
               'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota',
               'Tennessee', 'Texas', 'Utah', 'Vermont','Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming']
 stop_words = ['AND', 'Georgia']
-NUM_START, NUM_STOP = 0, 200000
-OUTPUT_FILE = 'countries_os.json'
 parser = argparse.ArgumentParser('Detect countries in documents')
 parser.add_argument('folders', metavar='N',  nargs='+', help='Initials of journals')
 args = parser.parse_args()
 FOLDERS = args.folders
-
+OUTPUT_FILE = 'countries_{}{}.json'.format(FOLDERS[0], FOLDERS[-1])
 
 
 def file2text(file):
@@ -37,7 +35,6 @@ def file2text(file):
                 'format': 'error'}
     root = tree.getroot()
     texts = ''
-    file_format = ''
     if root.tag == 'plain_text':
         for child in root:
             if child.text:
@@ -145,7 +142,7 @@ def load_file(path):
                     author_countries = get_country(parsed_result['text'][:1000])
                     if len(author_countries) > 0:
                         num_abstract += 1
-                        paper_id = file.split('.')[0]
+                        paper_id = file.split('.txt')[0]
                         paper_attributes[paper_id] = {'countries': author_countries}
                         method_countries = get_countries_from_method(method_text)
                         if method_countries:
@@ -157,10 +154,11 @@ def load_file(path):
                                 country_counter[c] = 1
                 if num_files % 1000 == 0:
                     print(num_files, num_methods, num_abstract)
-    with open(os.path.join(os.getcwd(), 'metadata', 'countries_METHOD', 'method_countries_{}.json'.format(FOLDERS[0] + FOLDERS[-1])), 'w') as f:
+    filename = os.path.join(os.getcwd(), 'metadata', 'countries_METHOD', 'method_countries_{}.json'.format(FOLDERS[0] + FOLDERS[-1]))
+    with open(filename, 'w') as f:
         json.dump(method_countries_dict, f)
-    #with open(os.path.join(os.getcwd(), 'metadata', OUTPUT_FILE), 'w') as f:
-    #    json.dump(paper_attributes, f)
+    with open(os.path.join(os.getcwd(), 'metadata', OUTPUT_FILE), 'w') as f:
+        json.dump(paper_attributes, f)
     print(country_counter)
     print("finished extraction")
     print(num_files, num_methods, num_abstract)

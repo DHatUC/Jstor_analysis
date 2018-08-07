@@ -20,4 +20,5 @@ def merge_json(path, name):
 if __name__ == '__main__':
     #merge_json(os.path.join(os.getcwd(), 'metadata'), 'year_journal')
     #merge_json((os.path.join(os.getcwd(), 'metadata')), 'countries')
-    merge_json(os.path.join(os.getcwd(), 'metadata', 'countries_METHOD'), 'method_countries')
+    #merge_json(os.path.join(os.getcwd(), 'metadata', 'countries_METHOD'), 'method_countries')
+    merge_json(os.path.join(os.getcwd(), 'metadata', 'countries_0706'), 'countries')

@@ -18,7 +18,7 @@ version = args.version
 
 
 def prepare_dict(path):
-    with open(os.path.join(path, 'text', 'method_{}.json'.format(country))) as f:
+    with open(os.path.join(path, 'text', 'method_coo', 'method_{}.json'.format(country))) as f:
         texts = json.load(f)
     dictionary = corpora.Dictionary(texts)
     corpus = [dictionary.doc2bow(text) for text in texts]
@@ -33,14 +33,14 @@ def load_file(path):
     #ldamodel = models.ldamodel.LdaModel(corpus, num_topics=NUM_TOPICS, id2word=dictionary, passes=PASSES)
     ldamodel = models.LdaMulticore(corpus, num_topics=NUM_TOPICS, id2word=dictionary, passes=PASSES, workers=2)
     t3.ends()
-    country_dir = os.path.join(path, 'lda_results', country)
+    country_dir = os.path.join(path, 'lda_results', country, 'method_coo')
     if not os.path.isdir(country_dir):
         os.mkdir(country_dir)
     version_dir = os.path.join(country_dir, version)
     if not os.path.isdir(version_dir):
         os.mkdir(version_dir)
-    ldamodel.save(os.path.join(path, 'lda_results', country, version, 'lda_model'))
-    dictionary.save(os.path.join(path, 'lda_results', country, version, 'dictionary'))
+    ldamodel.save(os.path.join(path, 'lda_results', country, 'method_coo', version, 'lda_model'))
+    dictionary.save(os.path.join(path, 'lda_results', country, 'method_coo', version, 'dictionary'))
 
 
 if __name__ == '__main__':

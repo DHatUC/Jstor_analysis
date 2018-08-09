@@ -67,8 +67,17 @@ def get_paper_list(country):
     return papers
 
 
+def get_paper_list_from_method_coo(country):
+    with open(os.path.join(os.getcwd(), 'metadata', 'countries_METHOD', 'method_countries.json')) as f:
+        data = json.load(f)
+    papers = [k for k, v in data.items() if country in v and v[country] > 2]
+    return papers
+
+
 def get_texts(country):
-    file_list = get_paper_list(country)
+    #file_list = get_paper_list(country)
+
+    file_list = get_paper_list_from_method_coo(country)
     texts = []
     num_files = 0
     for root, dirs, files in os.walk(DATA_PATH):
@@ -85,9 +94,10 @@ def get_texts(country):
                 token_text = stemming(remove_stop_words(tokenize(method_text)))
                 texts.append(token_text)
     print(num_files)
-    with open(os.path.join(os.getcwd(), 'text', 'method_{}.json'.format(country)), 'w') as f:
+    with open(os.path.join(os.getcwd(), 'text', 'method_coo', 'method_{}.json'.format(country)), 'w') as f:
         json.dump(texts, f)
 
 
 if __name__ == '__main__':
+    print(country)
     get_texts(country)

@@ -8,7 +8,7 @@ import random
 import argparse
 
 
-NUM_TOPICS = 15
+NUM_TOPICS = 20
 NUM_WORDS = 100
 
 

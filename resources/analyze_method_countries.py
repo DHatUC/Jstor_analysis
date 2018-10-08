@@ -96,9 +96,9 @@ def statistics_countries():
               'Studies in different countries of authors']
     sizes = [num_1_1, num_2_1, num_2_2, num - num_same]
     colors = ['yellowgreen', 'gold', 'lightskyblue', 'lightcoral']
-    #explode = (0.1, 0, 0, 0)  # explode 1st slice
+    explode = (0, 0, 0, 0.1)  # explode 1st slice
     #patches, texts = plt.pie(sizes, colors=colors, startangle=90)
-    patches, texts, sth = plt.pie(sizes, colors=colors, autopct='%1.1f%%', shadow=False, startangle=140)
+    patches, texts, sth = plt.pie(sizes, explode=explode, colors=colors, autopct='%1.1f%%', shadow=False, startangle=140)
     plt.legend(patches, labels, loc="best", fontsize=6)
     plt.axis('equal')
     #plt.tight_layout()
@@ -107,8 +107,8 @@ def statistics_countries():
 
 
 def main():
-    #statistics_countries()
-    hist_countries()
+    statistics_countries()
+    #hist_countries()
 
 
 if __name__ == '__main__':

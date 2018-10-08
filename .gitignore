@@ -11,3 +11,5 @@ lda_results/*
 metadata/*
 *.sh
 temp/*
+word2ve_model/
+word2vec_text/

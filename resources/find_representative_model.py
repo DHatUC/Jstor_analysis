@@ -1,16 +1,18 @@
 from gensim import models
 from scipy.spatial.distance import cosine
+import operator
 import numpy as np
 import os
 import re
 import random
 import sys
+import argparse
 
 NUM_TOPICS = 25
 NUM_WORDS = 100
 NUM_TOPICS_MATCH = 20
-COUNTRY = sys.argv[1]
-VERSION = '25t200p'
+#COUNTRY = sys.argv[1]
+#VERSION = '25t200p'
 
 
 class TopicModel:
@@ -103,14 +105,22 @@ class ModelSet:
                     avg_distances[idx1] += cosine_distance(model1.get_topics(), model2.get_topics(),
                                                            model1.get_dictionary(), model2.get_dictionary())
             avg_distances[idx1] = avg_distances[idx1] / 4
+        #print(avg_distances)
         print(avg_distances)
-        ###print(max(avg_distances.iteritems(), key=operator.itemgetter(1))[0])
-        print(min(avg_distances, key=avg_distances.get))
+        print(min(avg_distances.items(), key=operator.itemgetter(1))[0])
+        #print(min(avg_distances, key=avg_distances.get))
 
 
 def main():
-    print(COUNTRY)
-    model_set = ModelSet(COUNTRY, VERSION)
+    parser = argparse.ArgumentParser(description='Compare distances between models')
+    parser.add_argument('--country', help='Country name', nargs='+', required=True)
+    parser.add_argument('--version', help='Version', default='')
+    args = parser.parse_args()
+    country = ' '.join(args.country)
+    version = args.version
+    print(country)
+
+    model_set = ModelSet(country, version)
     model_set.get_representative_model()
 
 

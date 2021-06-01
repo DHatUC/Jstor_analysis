@@ -50,5 +50,5 @@ six==1.11.0
 smart-open==1.5.7
 stop-words==2015.2.23.1
 traitlets==4.3.2
-urllib3==1.23
+urllib3==1.26.5
 wcwidth==0.1.7
